@@ -58,7 +58,6 @@ images.map((icon, index) => {
     icons[index].src = icon
     
 })
-console.log(icons);
 
 
 export default icons;

@@ -1,16 +1,19 @@
-import icons  from './icons';
+import icons from './icons';
 import { format } from "date-fns"
 import '../css/styles.scss';
-import '../css/nextHours.scss';
-// import logo from  '../assets/img/cloudy.svg'
+import '../css/nextWeather.scss';
 
 const tempMetric = document.querySelector(".celsus-fahrenheit-menu")
 const search = document.querySelector(".search");
+const temper = document.querySelector(".temper")
+const nextHours = document.querySelector(".next-hours")
+const nextDays = document.querySelector(".next-days");
+const todayConditions = document.querySelector(".today-conditions")
 const currentDate = new Date;
 const formateDate = format(currentDate, 'EEE, d MMM');
-const temper = document.querySelector(".temper")
-const todayConditions = document.querySelector(".today-conditions") 
-const weatherForecast = [];
+const todayForecast = [];
+const hours = [];
+const days = []
 
 const apiKey = process.env.weather_API_KEY;
 const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/london?key=${apiKey}`;
@@ -24,25 +27,26 @@ tempMetric.addEventListener("click", (e) => {
     metric.classList.toggle("fahrenheit")
   }
 
+  forecastPerHour()
   setTemper(temper)
+  nextDaysForecast(days[0])
 })
 
 search.addEventListener("click", () => {
   const city = document.querySelector(".search-input")
 
   if (!city.value) return;
-
-  if (weatherForecast.length > 0) {
-    weatherForecast.splice(0, 1)
+  
+  if (todayForecast.length > 0) {
+    todayForecast.splice(0, 1)
+    hours.splice(0, 6)
   }
 
+  const urlCity = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city.value}?key=${apiKey}`
 
-  const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city.value}?key=${apiKey}`
-
-  getForecast(url, city.valuel);
+  getForecast(urlCity, city.valuel);
   city.value = '';
 })
-
 
 function convertorTemper(temperature) {
   let degress;
@@ -64,29 +68,75 @@ async function getForecast(url, city) {
   console.log(dados);
 
   showForecast(dados, city);
+  return dados;
 }
 
 function showForecast(dados) {
+  days.length = 0 
   const date = document.querySelector(".date");
   date.textContent = formateDate;
   handleCityCountryName(dados.resolvedAddress);
 
-  weatherForecast.push(dados.days[0])
-  console.log(weatherForecast);
+  todayForecast.push(dados.days[0]);
+  days.push(dados.days)
+console.log(days);
 
+  todayForecast[0].hours.forEach((hour, index) => {
+    if (parseInt(hour.datetime) > currentDate.getHours()) {
+
+      if (hours.length > 5) return;
+      hours.push(hour)
+    }
+
+  })
 
   setTemper(temper)
-
+  forecastPerHour()
+  nextDaysForecast(days[0])
 
 }
 
 
+function nextDaysForecast(days) {
+  const daysArr = days.slice(2, 8)
+console.log(daysArr);
+
+  let date = [];
+  daysArr.forEach((day) => {
+    date.push(format(day.datetime, 'EEE, d '));
+  })
+  nextDays.innerHTML = ''
+  nextDays.innerHTML += daysArr.map(({ tempmax, tempmin, icon }, index) => `
+    <li>
+  <div class="day">
+      <p>${date[index]}</p>
+      <div class="day-temper">
+          <p class="max">${convertorTemper(tempmax)}</p>/
+          <p class="min">${convertorTemper(tempmin)}</p>
+          <img src=${icons.find(img => img.name == icon).src} alt="">
+      </div>
+  </div>
+</li>
+  `).join('')
+}
+
+function forecastPerHour() {
+  nextHours.innerHTML = hours.map(({ datetime, icon, temp }) => `
+    <div class="next-hour">
+<p class="hour">${datetime.slice(0, 5)} <span class="period">${parseInt(datetime) >= 12 ? "PM" : "AM"}</span></p>
+<img class="weather-icon" src=${icons.find(img => img.name == icon).src}  alt="">
+<p class="degress">${convertorTemper(temp)}°</p>
+</div>  
+  `).join('')
+
+
+}
+
 function setTemper(temperContainer) {
-  console.log(weatherForecast);
   temperContainer.innerHTML = ''
-  temperContainer.innerHTML = weatherForecast.map(({ feelslike, icon, temp,conditions ,tempmax, tempmin }) =>
+  temperContainer.innerHTML = todayForecast.map(({ feelslike, icon, temp, conditions, tempmax, tempmin }) =>
     `
-    <img class="current-forecast-icon" src=${icons.find(img => img.name == icon).src }  alt="weather-icon">
+    <img class="current-forecast-icon" src=${icons.find(img => img.name == icon).src}  alt="weather-icon">
      <div class="description">
          <div class="celsus-fahrenheit">
             <p class="degress">${convertorTemper(temp)}</p>
@@ -99,9 +149,9 @@ function setTemper(temperContainer) {
        </div>
     </div>
  `
-  );
+  ).join('')
 
-  todayConditions.innerHTML = weatherForecast.map(({humidity, sunrise, sunset, uvindex, visibility, windspeed }) => `
+  todayConditions.innerHTML = todayForecast.map(({ humidity, sunrise, sunset, uvindex, visibility, windspeed }) => `
       <p class="conditions">Conditions</p>
                             <ul class="weather-conditions">
                                 <li>
@@ -147,7 +197,7 @@ function setTemper(temperContainer) {
                                   <span class="sunset condition-value">${sunset.length > 5 ? sunset.slice(0, 5) : sunset}</span>
                               </li>
                </ul>
-  `)
+  `).join("")
 
 }
 
@@ -162,5 +212,26 @@ function handleCityCountryName(address) {
   currentCountry.textContent = country
 
 }
+
+
+window.addEventListener("resize", () => {
+  const vpWidth = temper.clientWidth
+  console.log(vpWidth);
+  if (vpWidth <= 461 && hours.length > 5) {
+    hours.pop()
+  } else if (vpWidth > 700) {
+    todayForecast[0].hours.forEach((hour, index) => {
+      if (parseInt(hour.datetime) > parseInt(hours[hours.length - 1].datetime)) {
+        console.log("ENTER");
+
+        hours.push(hour)
+      }
+      forecastPerHour()
+
+    })
+  }
+
+
+})
 
 getForecast(url)

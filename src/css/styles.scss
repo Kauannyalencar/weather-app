@@ -10,42 +10,39 @@
     background-image: url(../assets/img/mountain.jpg);
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
+    overflow: auto;
     width: 100%;
-    height: 100%;
-    position: absolute;
+    height: 100vh;
+    position: fixed;
     z-index: -1;
 }
 
 .home {
     background-color: #7b5f7b7c;
-
+    height: 100vh;
 }
 
 header {
     display: flex;
     justify-content: space-between;
-    padding: 20px 10px;
+    padding:  10px;
     width: 80%;
 
     .logo {
         width: 35px;
         height: 100%;
-
     }
-
 
     .celsus-fahrenheit-menu {
         display: flex;
-        // align-items: center;
         gap: 50%;
         justify-content: center;
-        color: #09251c;
         font-weight: 600;
-        background-color: #8b67a3b0;
+        background-color: #9e76b8b0;
         border-radius: 15px;
         width: 80px;
         position: relative;
-        // padding: 5px 15px;
     }
 
     .celsus-change,
@@ -55,7 +52,7 @@ header {
         align-items: center;
         z-index: 999;
         cursor: pointer;
-        color: #363333;
+        color: #ffffff;
         pointer-events: none;
     }
 
@@ -106,13 +103,14 @@ header {
 }
 
 .forecast {
-    height: calc(100vh - 75px);
+    max-height: calc(100vh - 75px);
+    height: 97%;
     display: grid;
     grid-template-areas: "current-forecast next-days"
         "next-hours next-days";
-    grid-template-columns: 70% auto;
+    grid-template-columns: 65% auto;
     gap: 10px;
-    padding: 25px;
+    padding: 5px 20px; 
 }
 
 .current-forecast {
@@ -122,7 +120,6 @@ header {
     gap: 15px;
     grid-area: current-forecast;
     color: #fff;
-
     .city-info {
         display: flex;
         gap: 8px;
@@ -146,16 +143,14 @@ header {
         height: 100%;
     }
 
-
     .temper {
-        background-color: rgba(30, 28, 28, 0.389);
+        background-color: #0a0a0a85;
         border-radius: 10px;
         display: flex;
         justify-content: center;
         color: #fff;
         text-align: center;
         width: 100%;
-        // max-width: 500px;
         padding: 0 10px;
 
         .description {
@@ -163,7 +158,6 @@ header {
             align-items: center;
             gap: 25px;
             justify-content: center;
-
         }
 
         .current-forecast-icon {
@@ -193,7 +187,7 @@ header {
 }
 
 .today-conditions {
-    background-color: rgba(30, 28, 28, 0.389);
+    background-color: #0a0a0a85;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -214,7 +208,6 @@ header {
         li {
             display: flex;
             flex-direction: column;
-            // gap: 15px;
         }
 
         p {
@@ -229,53 +222,37 @@ header {
         }
 
         .condition-value {
-            // font-size: 1.3rem;
             color: #e7e7e7;
         }
     }
 }
 
-.days-container {
-    grid-area: next-days;
+@media (max-width:650px) {
+    .current-forecast{
+        gap: 5px;
+    }
+    .forecast-info .temper{
+        flex-direction: column;
+        align-items: center;
+        padding: 0px;
+        .current-forecast-icon{
+            width: 85px;
+            height: 65px;
+        }
+        .description{
+            flex-direction: column;
+            gap: 0;
+            .celsus-fahrenheit{
+                font-size: 1.8rem;
+            }
+        }
+    }
 }
 
-.next-days {
-    background-color: rgba(26, 24, 24, 0.315);
-    height: 100%;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: 5px;
-    padding: 15px;
 
-    li {
-        // height: 25%;
-        color: #fff;
-
-        &:not(:first-of-type) {
-            border-top: 1px solid #e4e2e1;
-
-        }
-    }
-
-    .day {
+@media (max-width:650px) {
+    .forecast{
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 15px;
-
-        .day-temper {
-            display: flex;
-            align-items: center;
-
-        }
-
-        img {
-            width: 40px;
-            height: 40px;
-        }
+        flex-direction: column;
     }
-
-
 }
