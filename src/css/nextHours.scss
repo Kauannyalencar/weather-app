@@ -1,0 +1,24 @@
+.next-hours{
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    grid-area: next-hours;
+
+    .next-hour{
+        background-color: rgba(26, 24, 24, 0.315);
+        text-align: center;
+        // width: 85px;
+        border-radius: 10px;
+        padding: 10px;
+        width: 120px;
+        height: 110px;
+
+        p{
+            color: #fff;
+        }
+        img{
+            width: 45px;
+            height: 45px;
+        }
+    }
+}
