@@ -31,7 +31,7 @@ Built as part of The Odin Project's JavaScript track.
 
 ## 📝 How to use
 
-To clone this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. \
+To clone this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. 
 ```bash
 # Clone this repository
 git clone https://github.com/Kauannyalencar/weather-app.git
