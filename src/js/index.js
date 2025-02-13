@@ -17,36 +17,7 @@ const days = []
 
 const apiKey = process.env.weather_API_KEY;
 const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/london?key=${apiKey}`;
-
-
-
-tempMetric.addEventListener("click", (e) => {
-  const metric = document.querySelector(".current-metric")
-  if (metric.classList.contains("celsus") || metric.classList.contains("fahrenheit")) {
-    metric.classList.toggle("celsus")
-    metric.classList.toggle("fahrenheit")
-  }
-
-  forecastPerHour()
-  setTemper(temper)
-  nextDaysForecast(days[0])
-})
-
-search.addEventListener("click", () => {
-  const city = document.querySelector(".search-input")
-
-  if (!city.value) return;
-  
-  if (todayForecast.length > 0) {
-    todayForecast.splice(0, 1)
-    hours.splice(0, 6)
-  }
-
-  const urlCity = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city.value}?key=${apiKey}`
-
-  getForecast(urlCity, city.valuel);
-  city.value = '';
-})
+let forecast = await getForecast(url);
 
 function convertorTemper(temperature) {
   let degress;
@@ -59,15 +30,12 @@ function convertorTemper(temperature) {
     degress = (temperature * 9 / 5) + 32;
     return degress.toFixed() + "°F"
   }
-  // return degress.toFixed();
 }
 
 async function getForecast(url, city) {
   const response = await fetch(url);
   const dados = await response.json();
-  console.log(dados);
 
-  showForecast(dados, city);
   return dados;
 }
 
@@ -79,15 +47,13 @@ function showForecast(dados) {
 
   todayForecast.push(dados.days[0]);
   days.push(dados.days)
-console.log(days);
 
+  const vpWidth = temper.clientWidth
   todayForecast[0].hours.forEach((hour, index) => {
     if (parseInt(hour.datetime) > currentDate.getHours()) {
-
-      if (hours.length > 5) return;
+      if (hours.length > 5 ) return;
       hours.push(hour)
     }
-
   })
 
   setTemper(temper)
@@ -99,7 +65,6 @@ console.log(days);
 
 function nextDaysForecast(days) {
   const daysArr = days.slice(2, 8)
-console.log(daysArr);
 
   let date = [];
   daysArr.forEach((day) => {
@@ -214,16 +179,46 @@ function handleCityCountryName(address) {
 }
 
 
+tempMetric.addEventListener("click", (e) => {
+  const metric = document.querySelector(".current-metric")
+  if (metric.classList.contains("celsus") || metric.classList.contains("fahrenheit")) {
+    metric.classList.toggle("celsus")
+    metric.classList.toggle("fahrenheit")
+  }
+
+  forecastPerHour()
+  setTemper(temper)
+  nextDaysForecast(days[0])
+})
+
+search.addEventListener("click", async() => {
+  const city = document.querySelector(".search-input")
+
+  if (!city.value) return;
+  
+  if (todayForecast.length > 0) {
+    todayForecast.splice(0, 1)
+    hours.splice(0, 6)
+  }
+
+  const urlCity = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city.value}?key=${apiKey}`
+
+   forecast = await getForecast(urlCity, city.valuel);
+  console.log(forecast);
+  
+  showForecast(forecast, city.value)
+  city.value = '';
+})
+
 window.addEventListener("resize", () => {
   const vpWidth = temper.clientWidth
-  console.log(vpWidth);
+
   if (vpWidth <= 461 && hours.length > 5) {
     hours.pop()
   } else if (vpWidth > 700) {
     todayForecast[0].hours.forEach((hour, index) => {
       if (parseInt(hour.datetime) > parseInt(hours[hours.length - 1].datetime)) {
-        console.log("ENTER");
-
+        if (hours.length > 5) return;
         hours.push(hour)
       }
       forecastPerHour()
@@ -234,4 +229,4 @@ window.addEventListener("resize", () => {
 
 })
 
-getForecast(url)
+showForecast(forecast)
