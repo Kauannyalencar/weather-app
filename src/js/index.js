@@ -228,3 +228,4 @@ window.addEventListener("resize", () => {
 })
 
 showForecast(forecast)
+
