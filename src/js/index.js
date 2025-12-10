@@ -172,7 +172,7 @@ function handleCityCountryName(address) {
   const currentCountry = document.querySelector(".country");
   const regex = /(\p{L}+(?:[-\s’]\p{L}+)*),\s*(\p{L}+(?:[-\s’]\p{L}+)*)/iu;
 
-  const [, city, country] = address.match(regex)
+  const [ city, country] = address.match(regex)
   currentCity.textContent = city + ",";
   currentCountry.textContent = country
 
@@ -225,8 +225,6 @@ window.addEventListener("resize", () => {
 
     })
   }
-
-
 })
 
 showForecast(forecast)
